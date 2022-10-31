@@ -91,7 +91,7 @@ if mode == "train":
     lr_scheduler_gamma = 0.1
 
     # How many iterations to print the training result
-    train_print_frequency = 1
+    train_print_frequency = 100
     valid_print_frequency = 1
 
 if mode == "test":

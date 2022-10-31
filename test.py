@@ -30,16 +30,16 @@ model_names = sorted(
 
 def main() -> None:
     # Initialize the super-resolution bsrgan_model
-    g_model = model.__dict__[srgan_config.g_arch_name](in_channels=srgan_config.in_channels,
+    sr_model = model.__dict__[srgan_config.g_arch_name](in_channels=srgan_config.in_channels,
                                                        out_channels=srgan_config.out_channels,
                                                        channels=srgan_config.channels,
-                                                       num_blocks=srgan_config.num_blocks)
-    g_model = g_model.to(device=srgan_config.device)
+                                                       num_rcb=srgan_config.num_rcb)
+    sr_model = sr_model.to(device=srgan_config.device)
     print(f"Build `{srgan_config.g_arch_name}` model successfully.")
 
     # Load the super-resolution bsrgan_model weights
     checkpoint = torch.load(srgan_config.g_model_weights_path, map_location=lambda storage, loc: storage)
-    g_model.load_state_dict(checkpoint["state_dict"])
+    sr_model.load_state_dict(checkpoint["state_dict"])
     print(f"Load `{srgan_config.g_arch_name}` model weights "
           f"`{os.path.abspath(srgan_config.g_model_weights_path)}` successfully.")
 
@@ -47,7 +47,7 @@ def main() -> None:
     make_directory(srgan_config.sr_dir)
 
     # Start the verification mode of the bsrgan_model.
-    g_model.eval()
+    sr_model.eval()
 
     # Initialize the sharpness evaluation function
     psnr = PSNR(srgan_config.upscale_factor, srgan_config.only_test_y_channel)
@@ -77,7 +77,7 @@ def main() -> None:
 
         # Only reconstruct the Y channel image data.
         with torch.no_grad():
-            sr_tensor = g_model(lr_tensor)
+            sr_tensor = sr_model(lr_tensor)
 
         # Save image
         sr_image = imgproc.tensor_to_image(sr_tensor, False, False)
