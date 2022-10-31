@@ -49,7 +49,7 @@ Modify the `srgan_config.py` file.
 - line 39: `upscale_factor` change to `4`.
 - line 41: `mode` change to `test`.
 - line 43: `exp_name` change to `SRGAN_CX_x4-DIV2K`.
-- line 96: `g_model_weights_path` change to `./results/pretrained_models/`.
+- line 96: `g_model_weights_path` change to `./results/pretrained_models/SRGAN_CX_x4-DIV2K-8c4a7569.pth.tar`.
 
 ```bash
 python3 test.py
@@ -117,16 +117,16 @@ In the following table, the psnr value in `()` indicates the result of the proje
 
 | Set5 | Scale |  SRResNet_CX  |   SRGAN_CX    |
 |:----:|:-----:|:-------------:|:-------------:|
-| PSNR |   4   | -(**32.14**)  | -(**29.08**)  |
-| SSIM |   4   | -(**0.8954**) | -(**0.8305**) |
+| PSNR |   4   | -(**32.14**)  | -(**30.64**)  |
+| SSIM |   4   | -(**0.8954**) | -(**0.8642**) |
 
 | Set14 | Scale |  SRResNet_CX  |   SRGAN_CX    |
 |:-----:|:-----:|:-------------:|:-------------:|
-| PSNR  |   4   | -(**28.57**)  | -(**25.89**)  |
-| SSIM  |   4   | -(**0.7815**) | -(**0.6932**) |
+| PSNR  |   4   | -(**28.57**)  | -(**27.12**)  |
+| SSIM  |   4   | -(**0.7815**) | -(**0.7321**) |
 
 ```bash
-# Download `ContextualLoss_x4-ImageNet-c71a4860.pth.tar` weights to `./results/pretrained_models`
+# Download `SRGAN_CX_x4-DIV2K-8c4a7569.pth.tar` weights to `./results/pretrained_models`
 # More detail see `README.md<Download weights>`
 python3 ./inference.py
 ```
@@ -141,7 +141,7 @@ Output:
 
 ```text
 Build `srresnet_x4` model successfully.
-Load `srresnet_x4` model weights `./results/pretrained_models/ContextualLoss_x4-ImageNet-c71a4860.pth.tar` successfully.
+Load `srresnet_x4` model weights `./results/pretrained_models/SRGAN_CX_x4-DIV2K-8c4a7569.pth.tar` successfully.
 SR image save to `./figure/comic_sr.png`
 ```
 

@@ -100,4 +100,4 @@ if mode == "test":
     sr_dir = f"./results/test/{exp_name}"
     gt_dir = f"./data/Set5/GTmod12"
 
-    g_model_weights_path = f""
+    g_model_weights_path = f"./results/pretrained_models/SRGAN_CX_x4-DIV2K-8c4a7569.pth.tar"
