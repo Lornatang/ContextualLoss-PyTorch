@@ -115,20 +115,15 @@ Source of original paper results: [https://arxiv.org/pdf/1803.04626.pdf](https:/
 
 In the following table, the psnr value in `()` indicates the result of the project, and `-` indicates no test.
 
-| Set5 | Scale |    SRResNet_CX     |      SRGAN_CX      |
-|:----:|:-----:|:------------------:|:------------------:|
-| PSNR |   4   |  32.05(**32.16**)  |  29.40(**29.08**)  |
-| SSIM |   4   | 0.9019(**0.8961**) | 0.8472(**0.8305**) |
+| Set5 | Scale |  SRResNet_CX  |   SRGAN_CX    |
+|:----:|:-----:|:-------------:|:-------------:|
+| PSNR |   4   | -(**32.14**)  | -(**29.08**)  |
+| SSIM |   4   | -(**0.8954**) | -(**0.8305**) |
 
-| Set14 | Scale |    SRResNet_CX     |      SRGAN_CX      |
-|:-----:|:-----:|:------------------:|:------------------:|
-| PSNR  |   4   |  28.49(**28.62**)  |  26.02(**25.89**)  |
-| SSIM  |   4   | 0.8184(**0.7831**) | 0.7397(**0.6932**) |
-
-| BSD100 | Scale |    SRResNet_CX     |      SRGAN_CX      |
-|:------:|:-----:|:------------------:|:------------------:|
-|  PSNR  |   4   |  27.58(**27.59**)  |  25.16(**24.91**)  |
-|  SSIM  |   4   | 0.7620(**0.7379**) | 0.6688(**0.6354**) |
+| Set14 | Scale |  SRResNet_CX  |   SRGAN_CX    |
+|:-----:|:-----:|:-------------:|:-------------:|
+| PSNR  |   4   | -(**28.57**)  | -(**25.89**)  |
+| SSIM  |   4   | -(**0.7815**) | -(**0.6932**) |
 
 ```bash
 # Download `ContextualLoss_x4-ImageNet-c71a4860.pth.tar` weights to `./results/pretrained_models`
