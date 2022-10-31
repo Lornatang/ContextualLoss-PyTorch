@@ -24,7 +24,7 @@ from torchvision.models.feature_extraction import create_feature_extractor
 
 __all__ = [
     "SRResNet", "Discriminator",
-    "discriminator", "srresnet_x4", "contextual_loss",
+    "srresnet_x4", "discriminator", "contextual_loss", "low_frequencies_loss"
 ]
 
 
@@ -148,64 +148,39 @@ class Discriminator(nn.Module):
         return out
 
 
-# Cropy from `https://github.com/ManuelFritsche/real-world-sr/blob/master/dsgan/model.py`
 class _GaussianFilter(nn.Module):
-    def __init__(self, kernel_size: int = 21, stride: int = 1, padding: int = 4) -> None:
+    def __init__(self, kernel_size: int = 21, sigma: int = 3, channels: int = 3) -> None:
         super(_GaussianFilter, self).__init__()
-        # Initialize gaussian kernel
-        mean = (kernel_size - 1) / 2.0
-        variance = (kernel_size / 6.0) ** 2.0
         # Create a x, y coordinate grid of shape (kernel_size, kernel_size, 2)
         x_coord = torch.arange(kernel_size)
         x_grid = x_coord.repeat(kernel_size).view(kernel_size, kernel_size)
         y_grid = x_grid.t()
         xy_grid = torch.stack([x_grid, y_grid], dim=-1).float()
 
-        # Calculate the 2-dimensional gaussian kernel
-        gaussian_kernel = torch.exp(-torch.sum((xy_grid - mean) ** 2., dim=-1) / (2 * variance))
+        mean = (kernel_size - 1) / 2.
+        variance = sigma ** 2.
+
+        # Calculate the 2-dimensional gaussian kernel which is
+        # the product of two gaussian distributions for two different
+        # variables (in this case called x and y)
+        gaussian_kernel = (1. / (2. * math.pi * variance)) * torch.exp(
+            -torch.sum((xy_grid - mean) ** 2., dim=-1) / (2 * variance))
 
         # Make sure sum of values in gaussian kernel equals 1.
         gaussian_kernel = gaussian_kernel / torch.sum(gaussian_kernel)
 
         # Reshape to 2d depth-wise convolutional weight
         gaussian_kernel = gaussian_kernel.view(1, 1, kernel_size, kernel_size)
-        gaussian_kernel = gaussian_kernel.repeat(3, 1, 1, 1)
+        gaussian_kernel = gaussian_kernel.repeat(channels, 1, 1, 1)
 
-        # create gaussian filter as convolutional layer
-        self.gaussian_filter = nn.Conv2d(3, 3, (kernel_size, kernel_size), (stride, stride), (padding, padding),
-                                         groups=3, bias=False)
+        self.gaussian_filter = nn.Conv2d(in_channels=channels, out_channels=channels, kernel_size=kernel_size,
+                                         groups=channels, bias=False, padding=kernel_size // 2)
+
         self.gaussian_filter.weight.data = gaussian_kernel
         self.gaussian_filter.weight.requires_grad = False
 
     def forward(self, x: Tensor) -> Tensor:
         out = self.gaussian_filter(x)
-
-        return out
-
-
-class _FilterLowFrequencies(nn.Module):
-    def __init__(
-            self,
-            kernel_size: int = 5,
-            stride: int = 1,
-            use_padding: bool = True,
-            avg_count_include_pad: bool = True,
-            use_gaussian: bool = True
-    ) -> None:
-        super(_FilterLowFrequencies, self).__init__()
-
-        if use_padding:
-            padding = int((kernel_size - 1) / 2)
-        else:
-            padding = 0
-
-        if use_gaussian:
-            self.filter = _GaussianFilter(kernel_size, stride, padding)
-        else:
-            self.filter = nn.AvgPool2d(kernel_size, stride, padding, count_include_pad=avg_count_include_pad)
-
-    def forward(self, x: Tensor) -> Tensor:
-        out = self.filter(x)
 
         return out
 
@@ -359,6 +334,12 @@ def discriminator() -> Discriminator:
 
 
 def contextual_loss(**kwargs) -> _ContextualLoss:
-    content_loss = _ContextualLoss(**kwargs)
+    contextual_loss = _ContextualLoss(**kwargs)
 
-    return content_loss
+    return contextual_loss
+
+
+def low_frequencies_loss(**kwargs) -> _GaussianFilter:
+    low_frequencies_loss = _GaussianFilter(**kwargs)
+
+    return low_frequencies_loss

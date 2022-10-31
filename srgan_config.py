@@ -34,16 +34,17 @@ g_arch_name = "srresnet_x4"
 in_channels = 3
 out_channels = 3
 channels = 64
-num_blocks = 16
+num_rcb = 16
+# Test upscale factor
 upscale_factor = 4
 # Current configuration parameter method
 mode = "train"
 # Experiment name, easy to save weights and log files
-exp_name = "SRGAN_x4"
+exp_name = "SRGAN_CX_x4-DIV2K"
 
 if mode == "train":
     # Dataset address
-    train_gt_images_dir = f"./data/ImageNet/SRGAN/train"
+    train_gt_images_dir = f"./data/DIV2K/SRGAN_CX/train"
 
     test_gt_images_dir = f"./data/Set5/GTmod12"
     test_lr_images_dir = f"./data/Set5/LRbicx{upscale_factor}"
@@ -53,28 +54,31 @@ if mode == "train":
     num_workers = 4
 
     # The address to load the pretrained model
-    pretrained_d_model_weights_path = ""
-    pretrained_g_model_weights_path = "./results/SRResNet_x4/g_last.pth.tar"
+    pretrained_d_model_weights_path = f""
+    pretrained_g_model_weights_path = f"./results/SRResNet_CX_x4-DIV2K/g_last.pth.tar"
 
     # Incremental training and migration training
     resume_d_model_weights_path = f""
     resume_g_model_weights_path = f""
 
     # Total num epochs (200,000 iters)
-    epochs = 18
+    epochs = 200
 
     # Loss function weight
-    cx_weight = 0.1
+    contextual_weight = 0.1
     pixel_weight = 10
     adversarial_weight = 0.001
 
-    # Feature extraction layer parameter configuration
+    # Contextual loss parameter configuration
     feature_model_extractor_node = "features.17"
     feature_model_normalize_mean = [0.485, 0.456, 0.406]
     feature_model_normalize_std = [0.229, 0.224, 0.225]
+    bandwidth = 0.1
 
-    # FilterLowFrequencies function parameter configuration
-    flf_kernel_size = 21
+    # L2 loss parameter configuration
+    lf_kernel_size = 21
+    lf_sigma = 3
+    lf_channels = 3
 
     # Optimizer parameter
     model_lr = 1e-4
@@ -87,7 +91,7 @@ if mode == "train":
     lr_scheduler_gamma = 0.1
 
     # How many iterations to print the training result
-    train_print_frequency = 100
+    train_print_frequency = 1
     valid_print_frequency = 1
 
 if mode == "test":
@@ -96,4 +100,4 @@ if mode == "test":
     sr_dir = f"./results/test/{exp_name}"
     gt_dir = f"./data/Set5/GTmod12"
 
-    g_model_weights_path = "./results/pretrained_models/SRGAN_x4-ImageNet-c71a4860.pth.tar"
+    g_model_weights_path = f""
